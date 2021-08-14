@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProCSharpCode.ProCSharpCode.Concurrency
+namespace Concurrency
 {
-
+    #region Introduction
     // introcuction
     // -----------------------------------------------------------------------------------
     //    Parallel programming in .NET can be achieved in a few different ways.There's
@@ -35,7 +36,6 @@ namespace ProCSharpCode.ProCSharpCode.Concurrency
     // the parallel portion of the Task Parallel Library.
 
 
-    #region Notes
     // Parallel programming should be used any time you have a fair amount of computation
     // work that can be split up into independent chunks.Parallel programming increases
     // the CPU usage temporarily to improve throughput; this is desirable on client
@@ -98,9 +98,25 @@ namespace ProCSharpCode.ProCSharpCode.Concurrency
     #region Important notes
 
     // Parallel methods :
-    // if exception is thrown in one of the currently executing tasks, execution of the other
-    // ones will not be stopped
+    // - they are all blocking the calling thread until finish the work
+
+    // - if exception is thrown in one of the currently executing tasks,
+    //  execution of the other ones will not be stopped.
     // 
+
+    // there are parallel options that can be passed to control the operation
+    //  MaxDegreeOfParallelism can be used to control the number of cores that Prallel opertion
+    // will be executed on. it is recommended to let it to it's default, as it will be automatically 
+    // adjusted to consume the whole cpu cores as possible as they can. and that is will be different 
+    // from a user to another. so if you hard coded MaxDegreeOfParallelism it will reduce the 
+    // parallelism of the execution, and you will not get the results as fast as you can
+    // except if you intend to execute the operation in specific number of cores, and let the 
+    // other ones.
+    // 
+
+    // don't run parallel code on asp.net server as it will introduce bad user experience 
+    // to users, imagine that one user made a request with heavy computations that run on parallel,
+    // the rest of the users will found the web site slow. imagine that the others make the same request
 
     #endregion
 
@@ -111,37 +127,47 @@ namespace ProCSharpCode.ProCSharpCode.Concurrency
         // Test Method
         public static void Test()
         {
+            Stopwatch watcher = Stopwatch.StartNew();
             ConcurrentBag<int> data = new ConcurrentBag<int>();
             Parallel.Invoke(
+                // new ParallelOptions() {  MaxDegreeOfParallelism=2, CancellationToken=default, TaskScheduler= TaskScheduler.Current}
                 () =>
                 {
-                    int result = Calculate();
+                    int result = Calculate(100_000,200_000);
                     data.Add(result);
                 },
                 () =>
                 {
-                    int result = Calculate();
+                    int result = Calculate(200_000, 300_000);
                     data.Add(result);
                 },
                 () =>
                 {
-                    int result = Calculate();
+                    int result = Calculate(300_000, 400_000);
                     data.Add(result);
                 },
                 () =>
                 {
-                    int result = Calculate();
+                    int result = Calculate(400_000, 500_000);
                     data.Add(result);
                 }
 
                 );
+
+            watcher.Stop();
+            Console.WriteLine($"Operation Finished in {watcher.ElapsedMilliseconds} ms");
+            foreach (var item in data)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine();
         }
 
 
-        // heavy operation
-        static int Calculate(int max= 3000000)
+        // Calculete prime NUmbers within a range of numbers
+        static int Calculate(int from, int count)
         {
-            return Enumerable.Range(2, 3000000).Count(n
+            return Enumerable.Range(from, count).Count(n
                      => Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0));
         }
 
