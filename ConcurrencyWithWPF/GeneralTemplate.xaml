@@ -6,23 +6,39 @@
         xmlns:local="clr-namespace:ConcurrencyWithWPF"
         mc:Ignorable="d"
         Title="General Template" Height="450" Width="800" FontFamily="Bahnschrift" FontSize="18">
-    <Grid>
+    <Grid Grid.IsSharedSizeScope="True">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="3*" MinWidth="250" MaxWidth="400" SharedSizeGroup="group"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Button x:Name="button" Content="Button" Grid.Column="1" MaxHeight="50" FontSize="25"/>
-        <TextBox x:Name="textBox" Text="TextBox" TextWrapping="Wrap" MaxHeight="50" Padding="5,5,5,5" Margin="10,0,10,0" VerticalContentAlignment="Center"/>
-        <DataGrid x:Name="dataGrid" Grid.Row="1"/>
-        <ListBox x:Name="listBox" Grid.Column="1" Grid.ColumnSpan="1" Grid.Row="1" MinWidth="200" MaxWidth="400"/>
+        <GroupBox x:Name="groupBox" Header="Search" Grid.ColumnSpan="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="3*" SharedSizeGroup="group" MinWidth="250"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="SearchText" TextWrapping="Wrap" MaxHeight="50" Padding="5,5,5,5" VerticalContentAlignment="Center" BorderThickness="3,3,3,3" BorderBrush="#FF6E6F74"/>
+                <Button x:Name="SearchButton" Content="Search" Grid.Column="1" MaxHeight="50" FontSize="25" Margin="5,0,0,0" Click="SearchButton_Click"/>
+            </Grid>
+        </GroupBox>
+        <Border Grid.Row="1" BorderThickness="2,0,2,2" BorderBrush="Black" CornerRadius="3,3,3,3" Margin="3,3,3,3" Padding="3,3,3,3">
+            <DockPanel>
+                <Label x:Name="label" Content="Data Grid" HorizontalContentAlignment="Center" DockPanel.Dock="Top"/>
+                <DataGrid x:Name="Data" DockPanel.Dock="Bottom"/>
+            </DockPanel>
+        </Border>
+        <DockPanel Grid.Column="1" Grid.Row="1">
+            <Label x:Name="label1" Content="Notes" DockPanel.Dock="Top" HorizontalContentAlignment="Center"/>
+            <ListBox x:Name="Notes" MaxWidth="400" MinWidth="100" DockPanel.Dock="Bottom"/>
+        </DockPanel>
         <StatusBar Grid.Row="2" Grid.ColumnSpan="2" MaxHeight="50">
-            <ProgressBar Height="20" Width="100" MinWidth="200" MaxWidth="400" Margin="10,0,10,0"/>
-            <TextBlock x:Name="textBlock" Text="Status Here" TextWrapping="Wrap" FontSize="16"/>
+            <ProgressBar x:Name="Progress" Height="20" Width="100" MinWidth="200" MaxWidth="400" Margin="5,0,10,0"/>
+            <TextBlock x:Name="Status" Text="Status Here" TextWrapping="Wrap" FontSize="16"/>
         </StatusBar>
 
     </Grid>
