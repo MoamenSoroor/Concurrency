@@ -1,10 +1,10 @@
-﻿<Window x:Class="ConcurrencyWithWPF.GeneralTemplate"
+﻿<Window x:Class="ConcurrencyWithWPF.TemplateWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ConcurrencyWithWPF"
-        mc:Ignorable="d"
+        mc:Ignorable="d" WindowState="Maximized"
         Title="General Template" Height="450" Width="800" FontFamily="Bahnschrift" FontSize="18">
     <Grid Grid.IsSharedSizeScope="True">
         <Grid.ColumnDefinitions>

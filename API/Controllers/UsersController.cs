@@ -33,7 +33,7 @@ namespace API.Controllers
         }
 
         // GET api/<UsersController>/page?page=0&length=10
-        [HttpGet("page")]
+        [HttpGet("GetPage")]
         public async Task<IEnumerable<User>> GetAsync([FromQuery]int page, [FromQuery]int? length)
         {
             length = length ?? 20; 
@@ -48,9 +48,10 @@ namespace API.Controllers
         }
 
         // GET api/<UsersController>/search?Name=text&Email=text&Address=text&Page=text&Length
-        [HttpGet("search")]
+        [HttpGet("Search")]
         public async Task<IEnumerable<User>> GetAsync([FromQuery]UserSearchModel search)
         {
+
             IQueryable<User> query = db.Users.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(search.Name))
@@ -62,6 +63,10 @@ namespace API.Controllers
 
             if (!string.IsNullOrWhiteSpace(search.Email))
                 query = query.Where(user => user.Email.Contains(search.Email));
+
+            if (!string.IsNullOrWhiteSpace(search.Country))
+                query = query.Where(user => user.Country.Contains(search.Country));
+
 
             // page and length exist
             if (search.Page.HasValue && search.Length.HasValue)
@@ -106,7 +111,7 @@ namespace API.Controllers
         }
 
         // PUT api/<UsersController>/5
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task PutAsync(int id, [FromBody] User value)
         {
             if (id != value.Id) throw new BadRequestException("invalid data.");
@@ -118,7 +123,7 @@ namespace API.Controllers
         }
 
         // DELETE api/<UsersController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task Delete(int id)
         {
 
@@ -134,35 +139,7 @@ namespace API.Controllers
 
 
 
-        public  class UserSearchModel
-        {
-
-            public string Name { get; set; }
-
-            public string Email { get; set; }
-
-            public string Address { get; set; }
-
-            public string Country { get; set; }
-
-
-            public int? Page { get; set; }
-
-            public int? Length { get; set; }
-
-
-            public bool IsEmptySearch()
-            {
-                return new[] {
-                    string.IsNullOrWhiteSpace(Name),
-                    string.IsNullOrWhiteSpace(Email),
-                    string.IsNullOrWhiteSpace(Address),
-                    string.IsNullOrWhiteSpace(Country)
-                }.All(cond=> cond == true);
-                    
-            }
-
-        }
+        
 
 
 
