@@ -8,8 +8,16 @@ namespace Concurrency
     {
         static void Main(string[] args)
         {
-            
-            ParallelInvokeMethod.Test();
+
+            //ParallelInvokeMethod.Test();
+            //ParallelInvokeExceptions.Test();
+
+            //ParallelForEach.Test();
+
+            //ParallelForEachBreak.Test();
+
+
+            parallelAggregation.Test();
         }
 
 

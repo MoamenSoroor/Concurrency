@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Concurrency
@@ -61,7 +62,7 @@ namespace Concurrency
     #endregion
 
 
-    #region Parallel Class
+    #region Introduction to Parallel Class
     //    we're going to use the Parallel class. This introduces a few helpers that will
     //allow us to more easily approach this. Internally.it will, in fact, use the
     //task from the Task parallel library. It will also provide some configuration
@@ -121,6 +122,13 @@ namespace Concurrency
     #endregion
 
     #region Parallel.Invoke
+    
+    // we used it when there are many actions that are not related together.
+
+    // if one of the actions that passed to invoke method has failed with exception,
+    // the other scheduled actions to execute will continue, and exception
+    // will propagated to the caller of Parallel.Invoke Method, but it will retruned
+    // after all scheduled actions finish.
 
     public class ParallelInvokeMethod
     {
@@ -177,6 +185,305 @@ namespace Concurrency
 
 
     #endregion
+
+    #region Parallel.Invoke : Case Of Exceptions
+    // 
+    // Parallel.Invoke : Case Of Exceptions
+    // --------------------------------------------------------------------------------
+    // 
+
+    // 
+    public class ParallelInvokeExceptions
+    {
+        // Test Method
+        public static void Test()
+        {
+            Stopwatch watcher = Stopwatch.StartNew();
+            ConcurrentBag<int> data = new ConcurrentBag<int>();
+
+            try
+            {
+
+                Parallel.Invoke(
+                    //new ParallelOptions() {
+                    //    MaxDegreeOfParallelism = 1, 
+                    //},
+                    () =>
+                    {
+                        int result = Calculate(100_000, 200_000);
+                        data.Add(result);
+                    },
+                    () =>
+                    {
+                        throw new Exception("failed operation 1.");
+                    //int result = Calculate(200_000, 300_000);
+                    //data.Add(result);
+                    },
+                    () =>
+                    {
+                        throw new Exception("failed operation 2.");
+                        //int result = Calculate(200_000, 300_000);
+                        //data.Add(result);
+                    },
+                    () =>
+                    {
+                        // will executes even if exception thrown in others
+                        int result = Calculate(300_000, 400_000);
+                        data.Add(result);
+                    },
+                    () =>
+                    {
+                        // will executes even if exception thrown in others
+                        int result = Calculate(400_000, 500_000);
+                        data.Add(result);
+                    }
+
+                    );
+
+            }
+            catch (AggregateException ex)
+            {
+                Console.WriteLine($"Exception Thrown: {ex.Message}");
+                Console.WriteLine(string.Join(Environment.NewLine,
+                    // to access all the thrown exceptions from multiple actions that ran in Parallel
+                    ex.InnerExceptions.Select(e => $"InnerExp: {e.Message}")));
+            }
+            watcher.Stop();
+            Console.WriteLine($"Operation Finished in {watcher.ElapsedMilliseconds} ms");
+
+            // NOTE: that the three other operations has been continued
+            //       
+            foreach (var item in data)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine();
+        }
+
+
+        // Calculete prime NUmbers within a range of numbers
+        static int Calculate(int from, int count)
+        {
+            return Enumerable.Range(from, count).Count(n
+                     => Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0));
+        }
+    }
+
+    #endregion
+
+
+    #region Parallel.ForEach Method
+    // 
+    // Parallel.ForEach Method
+    // --------------------------------------------------------------------------------
+    // 
+
+    // 
+    public class ParallelForEach
+    {
+        public static void Test()
+        {
+
+            Stopwatch watcher = Stopwatch.StartNew();
+            ConcurrentBag<int> data = new ConcurrentBag<int>();
+            
+            var primesTo = new List<int>()
+            { 
+                100_000, 200_000, 300_000, 400_000, 500_000,
+                450_000, 350_000, 500_000, 900_000
+            };
+
+
+            Parallel.ForEach(primesTo, (int value, ParallelLoopState state) =>
+            {
+                var result = Calculate(2, value);
+                data.Add(result);
+            });
+
+
+            watcher.Stop();
+            Console.WriteLine($"Operation Finished in {watcher.ElapsedMilliseconds} ms");
+            foreach (var item in data)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine();
+        }
+
+
+        // Calculete prime NUmbers within a range of numbers
+        static int Calculate(int from, int count)
+        {
+            return Enumerable.Range(from, count).Count(n
+                     => Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0));
+        }
+    }
+
+    #endregion
+
+
+    #region Parallel.ForEach: Break and Stop Methods
+    // 
+    // Parallel.ForEach: Break and Stop Methods
+    // --------------------------------------------------------------------------------
+    // Break: any non scheduled iteration after the iteration of Break will n't be executed
+    // and all iterations before break will be executed even if it's not schedulted
+    // so if a thread lagged before the current iteration, it will be executed
+
+    // Stop: any non scheduled iteration will not be executed.
+    // so if a thread lagged before the current iteration, it will not be executed
+    //
+
+    // 
+    // ShouldExitCurrentIteration
+    // ---------------------------
+    // If your loop body is long, you might want other threads to break partway through
+    // the method body in case of an early Break or Stop. You can do this by polling the
+    // ShouldExitCurrentIteration property at various places in your code; this property
+    // becomes true immediately after a Stop—or soon after a Break.
+
+    // ShouldExitCurrentIteration also becomes true after a cancellation request—or if
+    // an exception is thrown in the loop.
+
+
+
+
+    public class ParallelForEachBreak
+    {
+        public static void Test()
+        {
+            
+            Stopwatch watcher = Stopwatch.StartNew();
+            ConcurrentBag<(int iteration, int result)> data = new();
+
+            var primesTo = new List<int>()
+            {
+                100_000, 200_000, 300_000, 400_000, 500_000,
+                450_000, 350_000, 500_000, 900_000
+            };
+
+
+            ParallelLoopResult loopResult = Parallel.ForEach(primesTo
+                , (int value, ParallelLoopState state) =>
+            {
+                if(value  > 400_000 || state.ShouldExitCurrentIteration ) 
+                {
+                    Thread.Sleep(100); // Only to delay the current iteration
+                    // this will break the loop,
+                    // but note that all brevious iteration will be executed
+                    // and the next ones will not.
+                    // 
+                    state.Break();
+                    return;
+                }
+                var result = Calculate(2, value);
+                if(!state.ShouldExitCurrentIteration)
+                    data.Add((value,result));
+            });
+
+
+            watcher.Stop();
+            Console.WriteLine($"Operation Finished in {watcher.ElapsedMilliseconds} ms");
+            foreach (var item in data)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine("Completed: {0}",loopResult.IsCompleted);
+
+            // If LowestBreakIteration returns null, it means that you called Stop
+            // (rather than Break) on the loop.
+            Console.WriteLine("LowestBreakIteration: {0}", loopResult.LowestBreakIteration);
+            Console.WriteLine();
+        }
+
+
+        // Calculete prime NUmbers within a range of numbers
+        static int Calculate(int from, int count)
+        {
+            return Enumerable.Range(from, count).Count(n
+                     => Enumerable.Range(2, (int)Math.Sqrt(n) - 1).All(i => n % i > 0));
+        }
+    }
+
+    #endregion
+
+
+    #region 4.2 Parallel Aggregation
+    // 
+    // 4.2 Parallel Aggregation
+    // --------------------------------------------------------------------------------
+    // 
+
+    // 
+    public class parallelAggregation
+    {
+        public static void Test()
+        {
+            var result = ParallelEnumerable.Range(1, 1000_000);
+            TimeIt(() => Console.WriteLine(ParallelSum(result)));
+
+
+            TimeIt(() => Console.WriteLine(ParallelSumWithPLINQ(result)));
+
+
+            // output On My 8 Core CPU:
+            // ------------------------
+            // 500000500000
+            // it takes 100 ms.
+            // 500000500000
+            // it takes 17 ms.
+
+
+        }
+
+        // Note: this is not the most efficient implementation.
+        // This is just an example of using a lock to protect shared state.
+        static long ParallelSum(IEnumerable<int> values)
+        {
+            object mutex = new object();
+            long result = 0;
+            Parallel.ForEach(source: values,
+                localInit: () => (long)0,
+                body: (item, state, localValue) => localValue + item,
+                localFinally: localValue =>
+                {
+                    lock (mutex)
+                        result += localValue;
+                });
+
+            //Parallel.ForEach(
+            //    values,
+            //    ()=>0,
+            //    (value,state,localValue)=> value + localValue, 
+            //    localValue => { lock (mutex) result += localValue; }
+            //);
+
+
+            return result;
+        }
+
+
+        static long ParallelSumWithPLINQ(IEnumerable<int> values)
+        {
+            return values.AsParallel().Sum(v=> (long)v);
+        }
+
+
+        public static void TimeIt(Action action)
+        {
+            var watch = Stopwatch.StartNew();
+            action();
+            watch.Stop();
+            Console.WriteLine($"it takes {watch.ElapsedMilliseconds} ms.");
+        }
+
+    }
+
+    #endregion
+
+
+
 
 
 }
