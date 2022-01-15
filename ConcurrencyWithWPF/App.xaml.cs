@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfApp1;
 
 namespace ConcurrencyWithWPF
 {
@@ -35,6 +36,9 @@ namespace ConcurrencyWithWPF
 
             var mainWindow = serviceProvider.GetService<TemplateWindow>();
             mainWindow.Show();
+
+            RaceCondition raceWindow = new RaceCondition();
+            raceWindow.Show();
 
             base.OnStartup(e);
         }

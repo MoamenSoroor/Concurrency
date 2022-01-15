@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProCSharpCode.Concurrency
+namespace Concurrency
 {
 
     #region Important Definitions
@@ -226,7 +227,7 @@ namespace ProCSharpCode.Concurrency
         {
             Thread t = new Thread(new ThreadStart(GO));
             t.Start();
-            t.Join();   // with join this thread will wait for t to end
+            t.Join();   // with join main thread will wait for t to end
             Console.WriteLine("t thread has ended");
 
         }
@@ -448,7 +449,7 @@ namespace ProCSharpCode.Concurrency
     // -------------------------------------------------------------------------
     #endregion
 
-    #region Lack Of Thread Safety In Shared State
+    #region Race Conditions: Lack Of Thread Safety In Shared State
     // ------------------------ Lack Of Thread Safety In Shared State -------------------------
     // The output is actually indeterminate: it’s possible(though unlikely) that
     // “Done” could be printed twice.
@@ -484,6 +485,47 @@ namespace ProCSharpCode.Concurrency
 
     // -------------------------------------------------------------------------
     #endregion
+
+    #region Race Conditions : Lack Of Thread Safety In Shared State
+    // ------------------------ Lack Of Thread Safety In Shared State -------------------------
+
+    //[Run]
+    public class LackOfThreadSafetyInSharedState2
+    {
+        int count = 0;
+
+        // Test Method
+        public static void Test()
+        {
+            LackOfThreadSafetyInSharedState2 shared = new LackOfThreadSafetyInSharedState2();
+            var thread = new Thread(shared.Go);
+            thread.Start();      // Call instance method Go in the new thread
+            shared.Go();         // Call the same instance method again with the same object
+            thread.Join();
+            Console.WriteLine($"Count Should be 2000_000, but wait a minute it is : {shared.count}");
+
+        }
+
+        void Go()
+        {
+            for (int i = 0; i < 1000_000; i++)
+            {
+                // Race Condition
+                count++;
+                // 1 ..1
+                //   2..2
+            }
+        }
+    }
+
+    // We’ll see next how to fix our program
+    // with locking; 
+
+    // however it’s better to avoid shared state altogether where possible.
+
+    // -------------------------------------------------------------------------
+    #endregion
+
 
     #region Locking and Thread Safety
     // ------------------------ Locking and Thread Safety -------------------------

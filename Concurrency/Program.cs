@@ -10,14 +10,14 @@ namespace Concurrency
         {
 
             //ParallelInvokeMethod.Test();
-            //ParallelInvokeExceptions.Test();
-
+            //ParallelInvokeExceptions.Test
             //ParallelForEach.Test();
-
             //ParallelForEachBreak.Test();
+            //parallelAggregation.Test();
 
-
-            parallelAggregation.Test();
+            //Blocking.Test();
+            //LackOfThreadSafetyInSharedState.Test();
+            LackOfThreadSafetyInSharedState2.Test();
         }
 
 

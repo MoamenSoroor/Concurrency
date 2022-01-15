@@ -6,8 +6,11 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Concurrency", "Concurrency\Concurrency.csproj", "{1E62D39A-546C-4D30-A3DE-27430C3EDEDB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConcurrencyWithWPF", "ConcurrencyWithWPF\ConcurrencyWithWPF.csproj", "{1B475375-ED19-4E4F-9E1E-65A812B125CA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8AE6741C-BBE2-4509-BF6F-9856EB1ADB74} = {8AE6741C-BBE2-4509-BF6F-9856EB1ADB74}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{8AE6741C-BBE2-4509-BF6F-9856EB1ADB74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{8AE6741C-BBE2-4509-BF6F-9856EB1ADB74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

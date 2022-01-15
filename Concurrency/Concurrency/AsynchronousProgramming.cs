@@ -24,6 +24,14 @@ namespace Concurrency
     //completes, it notifies its future or invokes its callback or event to let the
     //application know the operation is finished.
 
+    // Key: task-based asynchronous pattern
+
+    // A continuation is effectively a callback to be executed when an asynchronous
+    // operation (or any Task) has completed. In an async method, the continuation
+    // maintains the state of the method. Just as a closure maintains its environment
+    // in terms of variables, a continuation remembers the point where it reached, so
+    // it can continue from there when it’s executed. The Task class has a method
+    // specifically for attaching continuations: Task.ContinueWith.
 
     #endregion
 
@@ -241,8 +249,8 @@ namespace Concurrency
 
 
             Console.WriteLine("Task running...");
-            Console.WriteLine("The answer is " + primeNumberTask.Result);
-
+            // Result property is blocking
+            Console.WriteLine("The answer is " + primeNumberTask.Result); 
         }
 
 
