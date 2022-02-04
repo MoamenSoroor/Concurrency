@@ -1,11 +1,11 @@
 # Concurrency in .Net
 This is my practices on all forms of Concurrency and Parallel Progamming in .Net with C#
 based on the following resources: 
-* <a href="https://www.amazon.com/Concurrency-Cookbook-Asynchronous-Multithreaded-Programming/dp/149205450X" target="_blank">Concurrency in C# Cookbook, 2nd Edition </a>
-* <a href="https://www.apress.com/gp/book/9781484230183" target="_blank">Pro C# 7 With .NET and .NET Core (Authors: Troelsen, Andrew, Japikse, Philip) </a>
-* <a href="https://www.amazon.com/C-7-0-Nutshell-Definitive-Reference/dp/1491987650" target="_blank">C# 7.0 in a Nutshell: The Definitive Reference by Joseph Albahari (Author), Ben Albahari (Author) </a> 
-* <a href="https://app.pluralsight.com/library/courses/applying-asynchronous-programming-c-sharp " target="_blank">applying-asynchronous-programming-c-sharp</a>
-* <a href="https://app.pluralsight.com/library/courses/getting-started-with-asynchronous-programming-dotnet/table-of-contents" target="_blank">getting-started-with-asynchronous-programming-dotnet</a> 
+* <a href="https://www.amazon.com/Concurrency-Cookbook-Asynchronous-Multithreaded-Programming/dp/149205450X" target="_blank" rel="noopener noreferrer">Concurrency in C# Cookbook, 2nd Edition </a>
+* <a href="https://www.apress.com/gp/book/9781484230183" target="_blank" rel="noopener noreferrer">Pro C# 7 With .NET and .NET Core (Authors: Troelsen, Andrew, Japikse, Philip) </a>
+* <a href="https://www.amazon.com/C-7-0-Nutshell-Definitive-Reference/dp/1491987650" target="_blank" rel="noopener noreferrer">C# 7.0 in a Nutshell: The Definitive Reference by Joseph Albahari (Author), Ben Albahari (Author) </a> 
+* <a href="https://app.pluralsight.com/library/courses/applying-asynchronous-programming-c-sharp " target="_blank" rel="noopener noreferrer">applying-asynchronous-programming-c-sharp</a>
+* <a href="https://app.pluralsight.com/library/courses/getting-started-with-asynchronous-programming-dotnet/table-of-contents" target="_blank" rel="noopener noreferrer">getting-started-with-asynchronous-programming-dotnet</a> 
 
 ## Convered Topics in Details:
 -------------------------------------------------------
