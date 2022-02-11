@@ -46,5 +46,9 @@ namespace ConcurrencyWithWPF
 
             services.AddSingleton<TemplateWindow>();
         }
+
+
+
+
     }
 }

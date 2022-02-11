@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -503,54 +504,7 @@ namespace Concurrency
     // --------------------------------------------------------------
     #endregion
 
-    // not right information
-    #region Access Static Values From Origial Context
-    // Not valid data;
-
-    public class Data
-    {
-        public static string Value { get; set; } = "hello";
-    }
-
-    [Obsolete("this code is not right don't use it")]
-    public class OriginalContext
-    {
-
-        public static void Test()
-        {
-            var obj = new OriginalContext();
-            obj.ContinuationOfMyTask().GetAwaiter().OnCompleted(() =>
-            {
-                Console.WriteLine("finish the work");
-            });
-
-        }
-
-
-        public async Task ContinuationOfMyTask()
-        {
-            await MyTaskMethod().ConfigureAwait(false);
-            Console.WriteLine(Data.Value ?? "NULL");
-        }
-
-        public Task MyTaskMethod()
-        {
-            return Task.Run(() =>
-            {
-
-                Console.WriteLine("I am at Another Thread");
-            });
-
-
-        }
-
-
-
-    }
-
-
-    #endregion
-
+    
 
     #region Asynchronous Streams IAsyncEnumerator and IAsyncEnumerable
 
@@ -651,6 +605,32 @@ namespace Concurrency
     }
 
     #endregion
+
+
+
+    // Exponential backoff 
+    #region Exponential backoff 
+    // 
+    // Exponential backoff 
+    // --------------------------------------------------------------------------------
+    // 
+
+    // 
+    public class ExponentialBackoff 
+    {
+        public static void Test()
+        {
+            
+
+
+        }
+
+
+
+    }
+
+    #endregion
+
 
 
 }

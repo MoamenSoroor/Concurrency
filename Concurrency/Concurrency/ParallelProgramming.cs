@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Concurrency.Shared;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -481,6 +482,73 @@ namespace Concurrency
     }
 
     #endregion
+
+    #region Dynamic Parallelism
+    // 
+    // Dynamic Parallelism
+    // --------------------------------------------------------------------------------
+    // 
+    // Problem
+    // You have a more complex parallel situation where the structure and number of
+    // parallel tasks depend on information known only at runtime.
+    // 
+    // solution: 
+    // The Task Parallel Library(TPL) is centered around the Task type.The Parallel
+    // class and Parallel LINQ are just convenience wrappers around the powerful Task.
+    // When you need dynamic parallelism, it’s easiest to use the Task type directly.
+
+
+    // The AttachedToParent flag ensures that the Task for each branch is linked to the
+    // Task for their parent node.This creates parent/child relationships among the Task
+    // instances that mirror the parent/child relationships in the tree nodes.
+
+    public class DynamicParallelism
+    {
+        public static void Test()
+        {
+            BinaryTree<long> numbersTree = new BinaryTree<long>();
+            numbersTree.AddNode(50);
+            numbersTree.AddNode(40);
+            numbersTree.AddNode(60);
+            numbersTree.AddNode(30);
+            numbersTree.AddNode(35);
+            numbersTree.AddNode(25);
+            numbersTree.AddNode(55);
+            numbersTree.AddNode(70);
+            numbersTree.AddNode(80);
+            numbersTree.AddNode(75);
+            ConcurrentBag<long> flattenBinaryTree = new ConcurrentBag<long>();
+            numbersTree.TraverseInParallel((value) => flattenBinaryTree.Add(value));
+            Console.WriteLine(string.Join(", ",flattenBinaryTree));
+
+        }
+
+        // If you don’t have a parent/child kind of situation, you can schedule any
+        // task to run after another by using a task continuation.
+
+
+        public static void DynamicParallelismNoParentChildRelationship()
+        {
+            Task task = Task.Factory.StartNew(
+                () => Thread.Sleep(TimeSpan.FromSeconds(2)),
+                CancellationToken.None,
+                TaskCreationOptions.None,
+                TaskScheduler.Default);
+
+            Task continuation = task.ContinueWith(
+                t => Trace.WriteLine("Task is done"),
+                CancellationToken.None,
+                TaskContinuationOptions.None,
+                TaskScheduler.Default);
+        }
+
+
+    }
+
+
+
+    #endregion
+
 
 
 

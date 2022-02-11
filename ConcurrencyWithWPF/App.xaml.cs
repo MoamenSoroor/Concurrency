@@ -34,11 +34,14 @@ namespace ConcurrencyWithWPF
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
 
-            var mainWindow = serviceProvider.GetService<TemplateWindow>();
-            mainWindow.Show();
+            //var mainWindow = serviceProvider.GetService<TemplateWindow>();
+            //mainWindow.Show();
 
-            RaceCondition raceWindow = new RaceCondition();
-            raceWindow.Show();
+            //RaceCondition raceWindow = new RaceCondition();
+            //raceWindow.Show();
+
+            SynchronizationContextWindow synchronizationContextWindow = new SynchronizationContextWindow();
+            synchronizationContextWindow.Show();
 
             base.OnStartup(e);
         }

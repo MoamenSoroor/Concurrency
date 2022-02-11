@@ -44,6 +44,17 @@ namespace Concurrency
     //Reactive programming is closely related to asynchronous programming but is built
     //on asynchronous events instead of asynchronous operations.
 
+    // Oversubscription 
+    // ----------------------
+    // Oversubscription is the condition of there being more active threads than CPU cores,
+    // with the OS having to time-slice threads.
+
+    // Oversubscription hurts performance because time-slicing requires expensive context
+    // switches and can invalidate the CPU caches that have become essential in delivering
+    // performance to modern processors.
+
+
+
     #endregion
 
     #region Introduction
@@ -72,10 +83,10 @@ namespace Concurrency
     // -------------------------------------------------------------------------
     #endregion
 
-    #region Important Definitions
-    // ------------------------ Important Definitions -------------------------
-    //Threading
-    //A thread is an execution path that can proceed independently of others.
+    #region Important
+    // ------------------------ Important -------------------------
+    // When a thread blocks or unblocks, the OS performs a context switch.
+    // This incurs a small overhead, typically one or two microseconds.
     // 
     // -------------------------------------------------------------------------
     #endregion
@@ -88,6 +99,13 @@ namespace Concurrency
     //
     // Compute-Bound:
     // an operation that spends most of its time performing CPU-intensive work is called computebound.
+    //
+    // An I/O-bound operation works in one of two ways: it either waits synchronously on
+    // the current thread until the operation is complete (such as Console.ReadLine,
+    // Thread.Sleep, or Thread.Join), or it operates asynchronously, firing a callback
+    // when the operation finishes some time later (more on this later).
+    // 
+    // 
     // -------------------------------------------------------------------------
     #endregion
 
@@ -738,12 +756,41 @@ namespace Concurrency
             }
             catch (Exception ex)
             {
-                // We'll never get here!
+                // will be catched.
                 Console.WriteLine("Exception!");
             }
             
         }
     }
+
+
+    // WARNING: BAD CODE !!!!
+    // Joining Threads Does Not Propagate Exceptions
+    public class JoiningThreadsDoesNotPropagateExceptions
+    {
+        // Test Method
+        public static void Test()
+        {
+            try
+            {
+                var t = new Thread(Go);
+                t.Start();
+                t.Join();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        static void Go()
+        {
+                throw null;     // Throws a NullReferenceException   
+        }
+
+
+    }
+
     // --------------------------------------------------------------
     #endregion
 
@@ -854,13 +901,40 @@ namespace Concurrency
 
     #region Threading in Rich-Client Applications
     // ------------------------ Threading in Rich-Client Applications -------------------------
+    // In WPF, UWP, and Windows Forms applications, executing long-running operations on the
+    // main thread makes the application unresponsive because the main thread also processes
+    // the message loop that performs rendering and handles keyboard and mouse events.
 
+    // A popular approach is to start up “worker” threads for time-consuming operations.
+    // The code on a worker thread runs a time-consuming operation and then updates the UI
+    // when complete.However, all rich client applications have a threading model whereby UI
+    // elements and controls can be accessed only from the thread that created them (typically t
+    // he main UI thread). Violating this causes either unpredictable behavior or an exception
+    // to be thrown.
+
+
+    //Hence when you want to update the UI from a worker thread, you must forward the request to
+    //the UI thread (the technical term is marshal). The low-level way to do this is as follows
+    //(later, we discuss other solutions that build on these):
+
+    //In WPF, call BeginInvoke or Invoke on the element’s Dispatcher object.
+
+    //In UWP apps, call RunAsync or Invoke on the Dispatcher object.
+
+    //In Windows Forms, call BeginInvoke or Invoke on the control.
+
+    //All of these methods accept a delegate referencing the method you want to run.BeginInvoke/RunAsync
+    //work by enqueuing the delegate to the UI thread’s message queue (the same queue that handles keyboard,
+    //mouse, and timer events). Invoke does the same thing but then blocks until the message has been read
+    //and processed by the UI thread.Because of this, Invoke lets you get a return value back from the method.
+    //If you don’t need a return value, BeginInvoke/RunAsync are preferable in that they don’t block the caller
+    //and don’t introduce the possibility of deadlock
     // -------------------------------------------------------------------------
     #endregion
 
     #region Synchronization Contexts
     // ------------------------ Synchronization Contexts -------------------------
-
+    // look at Cocurrency With WPF
     // -------------------------------------------------------------------------
     #endregion
 
@@ -901,16 +975,18 @@ namespace Concurrency
     // • WCF, Remoting, ASP.NET, and ASMX Web Services application servers
     // • System.Timers.Timer and System.Threading.Timer
     // • The parallel programming constructs
-    // • The(now redundant) BackgroundWorker class
-    // • Asynchronous delegates(also now redundant)
+    // • The(legacy) BackgroundWorker class
+    // • Asynchronous delegates(legacy)
     // --------------------------------------------------------------
     #endregion
+
+
 
     #region Hygiene in the thread pool
     // ------------------------ Hygiene in the thread pool -------------------------
     // The thread pool serves another function, which is to ensure that a temporary excess
     // of compute-bound work does not cause CPU oversubscription.
-    
+
     // Oversubscription 
     // -------------------
     // it is the condition of there being more active threads than CPU cores, with the operating
