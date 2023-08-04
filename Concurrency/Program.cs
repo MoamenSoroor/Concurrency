@@ -28,12 +28,20 @@ namespace Concurrency
             //RunScriptToGetRegionTitles();
 
 
-            JoiningThreadsDoesNotPropagateExceptions.Test();
+            //JoiningThreadsDoesNotPropagateExceptions.Test();
 
             //BinaryTreeTester.Test();
             //DynamicParallelism.Test();
 
             //TestDataFlow.Test();
+
+
+            //ThreadUnsafe.Test();
+
+
+            //NestedLocking.Test();
+            //DeadLocks.Test();
+            DeadLockWithTwoNestedLocks.Test();
         }
 
         static void RunScriptToGetRegionTitles()

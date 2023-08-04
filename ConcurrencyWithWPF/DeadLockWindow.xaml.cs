@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace ConcurrencyWithWPF
 {
     /// <summary>
     /// Interaction logic for DeadLock.xaml

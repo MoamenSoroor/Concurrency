@@ -633,6 +633,143 @@ namespace Concurrency
 
 
 
+    #region Continuation with WhenAll
+    public class ContinuationWithWhenAllAsyncAwait
+    {
+        // Test Method
+        public static async void Test()
+        {
+            List<Task<List<string>>> tasks = new List<Task<List<string>>>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                // each task will return list of string
+                var task = Task.Delay(500).ContinueWith(_ =>
+                {
+                    return Enumerable.Range(0, 4).Select(a => GenerateRandomStringWithRandomChar(3)).ToList();
+                });
+                tasks.Add(task);
+            }
+
+            // run the previous tasks in parallel
+
+            var allResults = await Task.WhenAll(tasks);
+
+            IList<string> allStrings = allResults.SelectMany(a=> a).ToList();
+
+            Console.WriteLine(string.Join(", ", allStrings));
+            
+        }
+
+        public static string GenerateRandomStringWithRandomChar(int length)
+        {
+
+            Random rand = new Random();
+            return string.Concat(Enumerable.Range(0, length).Select(n2 => (char)rand.Next('A', 'Z')));
+
+        }
+
+    }
+
+    #endregion
+
+
+    #region Continuation with WhenAll and WhenAny
+    // whenAll is used when we need to run many tasks in parallel and get result when all of them finish
+    // whenAny is used when we doesn't need to wait for all tasks to finish their work, and we want to continue
+    // with the one that has finished.
+    class TestWhenAllAndWhenAnyAsyncAwait
+    {
+        // Test Method
+        public static void Test()
+        {
+
+            var rand = new Random();
+
+            var source = new CancellationTokenSource();
+
+
+
+            var mytask = RunIOBoundOperation(source.Token, rand.Next(2000));
+
+            if (rand.Next(10) % 2 == 0)
+                source.Cancel();
+
+            //success
+            mytask.ContinueWith(d =>
+            {
+                Console.WriteLine(string.Join(", ", d.Result));
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            //failure
+            mytask.ContinueWith(d =>
+            {
+                if (d.IsFaulted)
+                    Console.WriteLine($"Faulted {d.Exception.InnerException?.Message}");
+                if (d.IsCanceled)
+                    Console.WriteLine($"Operation has been cancelled.");
+
+            }, TaskContinuationOptions.NotOnRanToCompletion);
+
+            Console.WriteLine("I am Free not tied with task ^_^");
+
+        }
+
+        public static Task<List<string>> RunIOBoundOperation(CancellationToken cancelToken, int? timeout = default)
+        {
+            Task<List<string>> operation = Task.Run(() =>
+            {
+
+                List<Task<string>> dataTasks = new List<Task<string>>();
+                for (int i = 0; i < 10; i++)
+                {
+                    if (cancelToken.IsCancellationRequested) break;
+                    var delayTask = Task.Delay(1000, cancelToken);
+                    // continuation on the previous delay
+                    // NOTE that i passed string count {i} as argument to avoid closure,
+                    //  - as callbacks doesn't caputre the changing value of except if you copy it at the
+                    //    definition scope of the callback
+                    //  - also we can avoid the overhead of generated code for closures
+                    // 
+                    var dataTask = delayTask.ContinueWith((dtask, str) => str as string, $"count {i}");
+                    dataTasks.Add(dataTask);
+                }
+
+
+                // when all
+                var allTasks = Task.WhenAll(dataTasks);
+
+                // timeout case
+                if (timeout.HasValue && timeout.Value > 0)
+                {
+                    var timeOutTask = Task.Delay(timeout.Value, cancelToken);
+
+                    // when any
+                    var isTimeoutTask = Task.WhenAny(allTasks, timeOutTask);
+
+                    var finalTask = isTimeoutTask.ContinueWith(a =>
+                    {
+                        if (a.Result == timeOutTask)
+                            throw new OperationCanceledException();
+                        return allTasks.Result.ToList();
+                    }, cancelToken);
+                    return finalTask;
+
+                }
+                else
+                    //without timeout
+                    return allTasks.ContinueWith(re => re.Result.ToList(), cancelToken);
+
+
+            });
+            return operation;
+        }
+    }
+
+    #endregion
+
+
+
 }
 
 

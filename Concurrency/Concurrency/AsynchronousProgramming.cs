@@ -527,6 +527,17 @@ namespace Concurrency
     // -------------------------------------------------------------------------
     #endregion
 
+    #region awaiter
+    // 
+    // awaiter
+    // --------------------------------------------------------------------------------
+    // An awaiter is any object that exposes the two methods that we’ve just seen
+    // (OnCompleted and GetResult) and a Boolean property called IsCompleted.
+    // There’s no interface or base class to unify all of these members (although
+    // OnCompleted is part of the interface INotifyCompletion).
+
+    #endregion
+
     #region Continuations With TaskAwaiter<TResult>
     // ------------------------ Continuations With TaskAwaiter<TResult> ------------------------- 
     // A continuation says to a task, “when you’ve finished, continue by doing something

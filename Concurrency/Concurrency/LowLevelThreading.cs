@@ -707,6 +707,7 @@ namespace Concurrency
     // Any try/catch/finally blocks in effect when a thread is created are of no relevance
     // to the thread when it starts executing.
 
+    // WARNING: BAD CODE !!!!
     public class ExceptionHandling
     {
         // Test Method

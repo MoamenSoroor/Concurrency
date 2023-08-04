@@ -1,0 +1,25 @@
+- Principles of Asynchrony
+
+- Asynchronous Functions
+
+- Awaiting a nongeneric task
+
+- Capturing local state
+
+- Building Asynchronous Functions
+
+- Returning Task<TResult>
+
+- the basic principle of how to design with asynchronous functions in C#
+
+- Asynchronous call graph execution
+
+- Parallelism
+
+- Asynchronous Lambda Expressions
+
+- Asynchronous Streams IAsyncEnumerator and IAsyncEnumerable
+
+- Asynchronous Streams: Querying IAsyncEnumerable<T>
+
+- Exponential backoff 

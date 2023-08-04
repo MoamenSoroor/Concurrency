@@ -1,0 +1,51 @@
+- Asynchronous Programming
+
+- Limitations of Threads
+
+- Tasks
+
+- Starting a Task
+
+- Wait a Task
+
+- Long - running tasks
+
+- Task Return Value
+
+- Exceptions
+
+- Exceptions and autonomous tasks
+
+- Continuations With TaskAwaiter<TResult>
+
+- Continuation With TaskAwaiter<TResult> and ConfigureAwait Method
+
+- Continuations With ContinueWith Method
+
+- Success and Failure in Continuation With ContinueWith Method
+
+- CancelationTokenSource and CancellationToken
+
+- Continuation with WhenAll
+
+- Continuation with WhenAll and WhenAny
+
+- Task.Factory.StartNew() Method
+
+- Task.Factory.StartNew() Child Tasks Attachment
+
+- Differences  Between Task.Run and Task.Factory.StartNew() Method 
+
+- Implementing Progress reporting with IProgress and Progress
+
+- TaskCompletionSource
+
+- Create alike Task.Run Method With TaskCompletionSource
+
+- The Real Power of the TaskCompletionSource
+
+- Delay With TaskCompletionSource
+
+- The Real Power of the TaskCompletionSource : 1000 IO Bound Operations
+
+- Task.Delay Method

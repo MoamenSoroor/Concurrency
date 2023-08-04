@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace ConcurrencyWithWPF
 {
     /// <summary>
     /// Interaction logic for RaceCondition.xaml
     /// </summary>
-    public partial class RaceCondition : Window
+    public partial class RaceConditionWindow : Window
     {
-        public RaceCondition()
+        public RaceConditionWindow()
         {
             InitializeComponent();
 
@@ -29,6 +29,7 @@ namespace WpfApp1
             Content = panel;
             _button.Click += (sender, args) =>
             {
+                _results.Text = "";
                 _button.IsEnabled = false;
                 Task.Run(() => Go());
                 //GoNormal();
@@ -49,11 +50,11 @@ namespace WpfApp1
         {
             for (int i = 1; i < 5; i++)
             {
-                int count = i;
-                int result = GetPrimesCount(count * 1000_000, 1000_000);
+                //int count = i;
+                int result = GetPrimesCount(i * 1000_000, 1000_000);
                 Dispatcher.BeginInvoke(new Action(() =>
-                _results.Text += result + " primes between " + (count * 1000000) +
-                " and " + ((count + 1) * 1000000 - 1) + Environment.NewLine));
+                _results.Text += result + " primes between " + (i * 1000000) +
+                " and " + ((i + 1) * 1000000 - 1) + Environment.NewLine));
             }
             Dispatcher.BeginInvoke(new Action(() => _button.IsEnabled = true));
         }

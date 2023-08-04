@@ -44,7 +44,7 @@ namespace ConcurrencyWithWPF
             services.AddScoped<ISearchHandlerFactory, SearchHandlerFactory>();
 
 
-            services.AddSingleton<TemplateWindow>();
+            services.AddSingleton<RaceConditionWindow>();
         }
 
 

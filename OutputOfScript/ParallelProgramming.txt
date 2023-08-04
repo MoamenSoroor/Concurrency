@@ -1,0 +1,17 @@
+- Introduction
+
+- Introduction to Parallel Class
+
+- Important notes
+
+- Parallel.Invoke
+
+- Parallel.Invoke : Case Of Exceptions
+
+- Parallel.ForEach Method
+
+- Parallel.ForEach: Break and Stop Methods
+
+- 4.2 Parallel Aggregation
+
+- Dynamic Parallelism
